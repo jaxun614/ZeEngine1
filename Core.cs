@@ -93,7 +93,9 @@ public class Core : Game
     /// libraries for desktop operating systems, so it is unavailable on Android and iOS.
     /// When false, <see cref="ImGuiRenderer"/> is null.
     /// </summary>
-    public static bool IsImGuiSupported { get; } = !(OperatingSystem.IsAndroid() || OperatingSystem.IsIOS());
+    public static bool IsImGuiSupported => !IsMobile;
+
+    private static bool IsMobile => OperatingSystem.IsAndroid() || OperatingSystem.IsIOS();
 
     /// <summary>  
     /// A set of grayscale gradient textures to use as transition guides  
@@ -178,8 +180,12 @@ public class Core : Game
 
         ExitOnEscape = true;
 
-        Window.AllowUserResizing = true;
-        Window.ClientSizeChanged += OnClientSizeChanged;
+        // Resizable windows only exist on desktop.
+        if (!IsMobile)
+        {
+            Window.AllowUserResizing = true;
+            Window.ClientSizeChanged += OnClientSizeChanged;
+        }
     }
 
     protected override void Initialize()

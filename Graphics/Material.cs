@@ -108,6 +108,9 @@ public class Material
     [Conditional("DEBUG")]
     public void Update()
     {
+        // Shader hot-reload is a desktop development feature.
+        if (OperatingSystem.IsIOS() || OperatingSystem.IsAndroid()) return;
+
         if (Asset.TryRefresh(out var oldAsset))
         {
             UpdateParameterCache();
