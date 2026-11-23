@@ -14,7 +14,7 @@ be consumed by a game project (see [MGLite](https://github.com/jaxun614/MGLite))
 - Input (keyboard, mouse, gamepad), audio controller
 - JSON save/load for players and worlds
 - LAN multiplayer: TCP transport and UDP broadcast server discovery
-- ImGui debug UI
+- ImGui debug UI (desktop only; skipped on Android and iOS, see `Core.IsImGuiSupported`)
 
 ## Using it
 

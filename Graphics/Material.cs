@@ -281,6 +281,12 @@ public class Material
     [Conditional("DEBUG")]
     public static void DrawVisibleDebugUi(GameTime gameTime)
     {
+        // No ImGui on this platform (e.g. Android/iOS), so there is nothing to draw.
+        if (Core.ImGuiRenderer == null)
+        {
+            return;
+        }
+
         // first, cull any materials that are not visible, or disposed. 
         var toRemove = new List<Material>();
         foreach (var material in s_debugMaterials)

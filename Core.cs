@@ -88,6 +88,13 @@ public class Core : Game
     /// </summary>  
     public static ImGuiRenderer ImGuiRenderer { get; private set; }
 
+    /// <summary>
+    /// Gets whether the ImGui debug UI can run on this platform. ImGui.NET only ships native
+    /// libraries for desktop operating systems, so it is unavailable on Android and iOS.
+    /// When false, <see cref="ImGuiRenderer"/> is null.
+    /// </summary>
+    public static bool IsImGuiSupported { get; } = !(OperatingSystem.IsAndroid() || OperatingSystem.IsIOS());
+
     /// <summary>  
     /// A set of grayscale gradient textures to use as transition guides  
     /// </summary>  
@@ -200,9 +207,12 @@ public class Core : Game
         // Create the sprite batch instance.
         SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-        // Create the ImGui renderer.
-        ImGuiRenderer = new ImGuiRenderer(this);
-        ImGuiRenderer.RebuildFontAtlas();
+        // Create the ImGui renderer (desktop only, see IsImGuiSupported).
+        if (IsImGuiSupported)
+        {
+            ImGuiRenderer = new ImGuiRenderer(this);
+            ImGuiRenderer.RebuildFontAtlas();
+        }
 
         Pixel = new Texture2D(GraphicsDevice, 1, 1);
         Pixel.SetData(new Color[]{ Color.White });
