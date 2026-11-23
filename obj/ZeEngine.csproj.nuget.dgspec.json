@@ -1,0 +1,94 @@
+{
+  "format": 1,
+  "restore": {
+    "/Users/jacksonadams/GameDev/Extended/Extended/ZeEngine copy/ZeEngine.csproj": {}
+  },
+  "projects": {
+    "/Users/jacksonadams/GameDev/Extended/Extended/ZeEngine copy/ZeEngine.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/Users/jacksonadams/GameDev/Extended/Extended/ZeEngine copy/ZeEngine.csproj",
+        "projectName": "ZeEngine",
+        "projectPath": "/Users/jacksonadams/GameDev/Extended/Extended/ZeEngine copy/ZeEngine.csproj",
+        "packagesPath": "/Users/jacksonadams/.nuget/packages/",
+        "outputPath": "/Users/jacksonadams/GameDev/Extended/Extended/ZeEngine copy/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/Users/jacksonadams/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "framework": "net9.0",
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "10.0.400"
+      },
+      "frameworks": {
+        "net9.0": {
+          "framework": "net9.0",
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "ImGui.NET": {
+              "target": "Package",
+              "version": "[1.91.6.1, )"
+            },
+            "MonoGame.Extended": {
+              "target": "Package",
+              "version": "[6.0.0, )"
+            },
+            "MonoGame.Framework.DesktopGL": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[3.8.*, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[9.0.22, 9.0.22]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[9.0.22, 9.0.22]"
+            }
+          ],
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/10.0.403/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
