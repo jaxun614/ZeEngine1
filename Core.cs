@@ -266,6 +266,9 @@ public class Core : Game
         // Update the input manager.
         Input.Update(gameTime);
 
+        // Deliver queued network events and messages, on the game thread.
+        Network.Update();
+
         // Update the audio controller.
         Audio.Update();
 

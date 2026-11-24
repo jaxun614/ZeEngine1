@@ -10,5 +10,11 @@
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*">
       <PrivateAssets>All</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="xunit" Version="2.9.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The test project lives in a subfolder; don't compile its files into the engine. -->
+    <Compile Remove="ZeEngine.Tests/**" />
+    <None Remove="ZeEngine.Tests/**" />
   </ItemGroup>
 </Project>
