@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace ZeEngine.Networking;
 
@@ -47,6 +48,7 @@ public sealed class LanDiscovery : IDisposable
 
     private CancellationTokenSource _announceCts;
     private UdpClient _listenClient;
+    private CancellationTokenSource _listenCts;
 
     private long _packetsSent;
     private long _packetsReceived;
@@ -201,10 +203,12 @@ public sealed class LanDiscovery : IDisposable
                 udp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true);
                 udp.Client.Bind(new IPEndPoint(IPAddress.Any, DiscoveryPort));
 
+                var cts = new CancellationTokenSource();
                 _listenClient = udp;
+                _listenCts = cts;
                 ListenError = null;
 
-                new Thread(() => ListenLoop(udp)) { IsBackground = true }.Start();
+                _ = Task.Run(() => ListenLoopAsync(udp, cts));
             }
             catch (Exception ex)
             {
@@ -215,34 +219,66 @@ public sealed class LanDiscovery : IDisposable
         }
     }
 
+    /// <summary>
+    /// Stops listening. Returns immediately and never blocks: the listener notices the
+    /// cancellation, closes its own socket, and exits.
+    /// </summary>
+    /// <remarks>
+    /// The socket is deliberately NOT closed from here. Closing a socket while another thread is
+    /// blocked receiving on it can hang the closing thread on some platforms (macOS in particular),
+    /// and this is called from the game thread when a scene ends.
+    /// </remarks>
     public void StopListening()
     {
+        CancellationTokenSource cts;
         lock (_lock)
         {
-            try { _listenClient?.Dispose(); } catch { }
+            cts = _listenCts;
+            _listenCts = null;
             _listenClient = null;
         }
 
+        try { cts?.Cancel(); } catch { }
         _servers.Clear();
     }
 
-    private void ListenLoop(UdpClient udp)
+    private async Task ListenLoopAsync(UdpClient udp, CancellationTokenSource cts)
     {
+        CancellationToken token = cts.Token;
+
         try
         {
-            var remote = new IPEndPoint(IPAddress.Any, 0);
-            while (true)
+            while (!token.IsCancellationRequested)
             {
-                byte[] data = udp.Receive(ref remote);
-                HandlePacket(data, remote.Address);
+                try
+                {
+                    UdpReceiveResult packet = await udp.ReceiveAsync(token).ConfigureAwait(false);
+                    if (token.IsCancellationRequested) break;
+
+                    HandlePacket(packet.Buffer, packet.RemoteEndPoint.Address);
+                }
+                catch (SocketException ex) when (!token.IsCancellationRequested)
+                {
+                    // A hiccup (for example the network adapter changed). Note it and keep listening.
+                    LastError = $"listener: {ex.Message}";
+                    Debug.WriteLine($"LAN listener: {ex.Message}");
+                    await Task.Delay(250, token).ConfigureAwait(false);
+                }
             }
         }
-        catch (ObjectDisposedException) { }   // StopListening() closed the socket
-        catch (SocketException) { }           // same, on some platforms
+        catch (OperationCanceledException) { }   // StopListening() asked us to stop
+        catch (ObjectDisposedException) { }
+        catch (SocketException) { }              // the socket was torn down while stopping
         catch (Exception ex)
         {
             LastError = $"listener stopped: {ex.Message}";
             Debug.WriteLine($"LAN listener stopped: {ex.Message}");
+        }
+        finally
+        {
+            // The one place this socket is closed, from the thread that was using it.
+            try { udp.Dispose(); } catch { }
+            try { cts.Dispose(); } catch { }
         }
     }
 
